@@ -1,0 +1,221 @@
+import { randomUUID } from "crypto";
+import { expect, test } from "vitest";
+import { decodeLocation } from "../src/history";
+import { getMatcher, match } from "../src/matcher";
+
+const getMatcherEqual = <E>(route: string, expected: E) => {
+  const name = randomUUID();
+  return expect(getMatcher(name, route)).toStrictEqual({ name, ...expected });
+};
+
+test("getMatcher returns a proper matcher structure for paths without params", () => {
+  getMatcherEqual("/groups", {
+    isArea: false,
+    ranking: 9,
+    path: ["groups"],
+    search: undefined,
+  });
+
+  getMatcherEqual("/groups/mine", {
+    isArea: false,
+    ranking: 18,
+    path: ["groups", "mine"],
+    search: undefined,
+  });
+});
+
+test("getMatcher returns a proper matcher structure for paths with params (in path only)", () => {
+  getMatcherEqual("/group/:groupId", {
+    isArea: false,
+    ranking: 16,
+    path: ["group", { name: "groupId" }],
+    search: undefined,
+  });
+
+  getMatcherEqual("/groups/:groupId/users", {
+    isArea: false,
+    ranking: 25,
+    path: ["groups", { name: "groupId" }, "users"],
+    search: undefined,
+  });
+
+  getMatcherEqual("/projects/:projectId/:env{live|sandbox}", {
+    isArea: false,
+    ranking: 24,
+    path: [
+      "projects",
+      { name: "projectId" },
+      { name: "env", union: new Set(["live", "sandbox"]) },
+    ],
+    search: undefined,
+  });
+});
+
+test("getMatcher returns a proper matcher structure for paths with params (in path and search)", () => {
+  getMatcherEqual("/group/:groupId?:foo&:bar[]#:baz", {
+    isArea: false,
+    ranking: 16,
+    path: ["group", { name: "groupId" }],
+    search: {
+      foo: { multiple: false },
+      bar: { multiple: true },
+    },
+  });
+
+  getMatcherEqual("/group/:groupId?:foo{a|b}&:bar{c|d}[]#:baz{e|f}", {
+    isArea: false,
+    ranking: 16,
+    path: ["group", { name: "groupId" }],
+    search: {
+      foo: { multiple: false, union: new Set(["a", "b"]) },
+      bar: { multiple: true, union: new Set(["c", "d"]) },
+    },
+  });
+});
+
+test("getMatcher decrements the ranking by 1 if the path is an area", () => {
+  getMatcherEqual("/groups/:groupId/users/*", {
+    isArea: true,
+    ranking: 24,
+    path: ["groups", { name: "groupId" }, "users"],
+    search: undefined,
+  });
+
+  getMatcherEqual("/groups/:groupId/users/*?:foo&:bar[]", {
+    isArea: true,
+    ranking: 24,
+    path: ["groups", { name: "groupId" }, "users"],
+    search: {
+      foo: { multiple: false },
+      bar: { multiple: true },
+    },
+  });
+
+  getMatcherEqual("/groups/:groupId/users", {
+    isArea: false,
+    ranking: 25,
+    path: ["groups", { name: "groupId" }, "users"],
+    search: undefined,
+  });
+
+  getMatcherEqual("/groups/:groupId/users", {
+    isArea: false,
+    ranking: 25,
+    path: ["groups", { name: "groupId" }, "users"],
+    search: undefined,
+  });
+
+  getMatcherEqual(
+    "/groups?:orderBy{asc|desc}&:status{disabled|enabled|pending}[]",
+    {
+      isArea: false,
+      ranking: 9,
+      path: ["groups"],
+      search: {
+        orderBy: {
+          multiple: false,
+          union: new Set(["asc", "desc"]),
+        },
+        status: {
+          multiple: true,
+          union: new Set(["disabled", "enabled", "pending"]),
+        },
+      },
+    },
+  );
+});
+
+const matchers = [
+  getMatcher(
+    "Groups",
+    "/groups?:orderBy{asc|desc}&:status{disabled|enabled|pending}[]",
+  ),
+  getMatcher("Group", "/groups/:groupId"),
+  getMatcher("MyGroup", "/groups/mine"),
+  getMatcher("UsersArea", "/groups/:groupId/users/*"),
+  getMatcher("Users", "/groups/:groupId/users"),
+  getMatcher("Project", "/projects/:projectId/:env{live|sandbox}"),
+].sort((a, b) => b.ranking - a.ranking); // we sort the matchers since match doesn't do it at each call
+
+const matchEqual = <E>(path: string, expected: E) =>
+  expect(match(decodeLocation(path), matchers)).toStrictEqual(expected);
+
+test("match extract route params and matches against a matcher", () => {
+  matchEqual("/groups", {
+    key: "zjtk4x-0",
+    name: "Groups",
+    params: {},
+  });
+
+  matchEqual("/groups/github", {
+    key: "1xtu51s-0",
+    name: "Group",
+    params: { groupId: "github" },
+  });
+
+  matchEqual("/groups/mine", {
+    key: "1gopcby-0",
+    name: "MyGroup",
+    params: {},
+  });
+
+  matchEqual("/groups/github/users/nested", {
+    key: "g43jq8-0",
+    name: "UsersArea",
+    params: { groupId: "github" },
+  });
+
+  matchEqual("/groups/github/users", {
+    key: "1iqwlap-0",
+    name: "Users",
+    params: { groupId: "github" },
+  });
+
+  matchEqual("/groups?orderBy=asc", {
+    key: "zjtk4x-1gluujz",
+    name: "Groups",
+    params: { orderBy: "asc" },
+  });
+
+  matchEqual("/groups?orderBy=asc&orderBy=desc", {
+    key: "zjtk4x-1gluujz",
+    name: "Groups",
+    params: { orderBy: "asc" },
+  });
+
+  matchEqual("/groups?orderBy=invalid", {
+    key: "zjtk4x-0",
+    name: "Groups",
+    params: {},
+  });
+
+  matchEqual("/groups?orderBy=invalid&orderBy=desc", {
+    key: "zjtk4x-1xytzwc",
+    name: "Groups",
+    params: { orderBy: "desc" },
+  });
+
+  matchEqual("/groups?status=disabled&status=pending", {
+    key: "zjtk4x-1gjv8l3",
+    name: "Groups",
+    params: { status: ["disabled", "pending"] },
+  });
+
+  matchEqual("/groups?status=invalid&status=pending", {
+    key: "zjtk4x-1tkhw3n",
+    name: "Groups",
+    params: { status: ["pending"] },
+  });
+
+  matchEqual("/projects/swan/live", {
+    key: "13ec1qg-0",
+    name: "Project",
+    params: { projectId: "swan", env: "live" },
+  });
+});
+
+test("match returns undefined in case of no route match", () => {
+  matchEqual("/repositories/:repositoryId", undefined);
+  matchEqual("/bills/:billId", undefined);
+  matchEqual("/projects/swan/invalid", undefined);
+});

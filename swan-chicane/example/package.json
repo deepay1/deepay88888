@@ -1,0 +1,22 @@
+{
+  "name": "@swan-io/chicane-example",
+  "private": true,
+  "scripts": {
+    "build": "tsc && vite build",
+    "dev": "vite",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "@swan-io/chicane": "workspace:*",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "ts-pattern": "^5.9.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react-swc": "^4.2.2",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.6"
+  }
+}

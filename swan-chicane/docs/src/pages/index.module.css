@@ -1,0 +1,94 @@
+/**
+ * CSS files with the .module.css suffix will be treated as CSS modules
+ * and scoped locally.
+ */
+
+.heroBanner {
+  display: flex;
+  justify-content: space-between;
+  overflow: hidden;
+  position: relative;
+  color: #fff;
+  background: linear-gradient(
+    to bottom right,
+    #8266c4 0%,
+    rgba(217, 97, 81, 0.5) 70.75%
+  );
+}
+
+.heroLeft {
+  display: flex;
+  flex-direction: row;
+}
+
+.heroLogo {
+  max-width: 150px;
+  height: auto;
+  align-self: center;
+  margin-right: 32px;
+}
+
+.heroTitle {
+  font-size: 64px;
+  margin: 0;
+  padding: 0;
+}
+
+.heroSubtitle {
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.heroButtons {
+  text-align: center;
+}
+
+.heroButton {
+  border: 1px solid white;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.heroButton:hover {
+  color: #fff;
+}
+
+.heroButtonSeparator {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+}
+
+.heroCode {
+  box-shadow: 0 20px 30px -10px #d96151;
+  text-align: left;
+}
+
+:global([data-theme="dark"]) .heroCode {
+  box-shadow: 0 20px 30px -10px #572720;
+}
+
+.heroCodeBlock {
+  margin-bottom: 0 !important;
+}
+
+@media screen and (max-width: 1200px) {
+  .heroBanner {
+    padding: 2rem;
+    padding-top: 3rem;
+    flex-direction: column;
+    text-align: center;
+    align-items: stretch;
+  }
+
+  .heroLeft {
+    flex-direction: column;
+    margin-bottom: 3rem;
+  }
+
+  .heroLogo {
+    max-width: 100px;
+    margin-right: 0;
+    margin-bottom: 16px;
+  }
+}

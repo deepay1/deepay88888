@@ -1,0 +1,1 @@
+var firebaseConfig = {"apiKey":"BJAblgILvtc0gkn1zE40FZY2vaE0WewJpfEMCJ7KN9o2gjtZAYZF6bjSAyNSwqu5feXwfi790xfWvOinBlTmpxs","authDomain":"deepveloce-b2fa5.firebaseapp.com","projectId":"222780359486","storageBucket":"OvoPay-app.firebasestorage.app","messagingSenderId":"222780359486","appId":"1:364630175808:web:79a615ef8535a527786fa5","measurementId":"532589522"}

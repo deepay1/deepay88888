@@ -1,0 +1,90 @@
+{
+  "name": "@swan-io/chicane",
+  "version": "3.0.0",
+  "license": "MIT",
+  "packageManager": "pnpm@10.24.0",
+  "description": "A simple and safe router for React and TypeScript",
+  "author": "Mathieu Acthernoene <mathieu.acthernoene@swan.io>",
+  "homepage": "https://swan-io.github.io/chicane",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/swan-io/chicane.git"
+  },
+  "zshy": {
+    "exports": {
+      ".": "./src/index.ts",
+      "./server": "./src/server.ts"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "module": "./dist/index.mjs",
+  "main": "./dist/index.js",
+  "source": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.mjs",
+      "require": "./dist/server.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "hook",
+    "react",
+    "router",
+    "typescript"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "format": "prettier '**/*' --ignore-unknown --write",
+    "lint": "eslint",
+    "test": "vitest --run",
+    "test:watch": "vitest --watch",
+    "typecheck": "tsc --noEmit",
+    "build": "pnpm clean && zshy && rm -rf dist/*.d.mts",
+    "prepack": "pnpm typecheck && pnpm lint && pnpm test && pnpm build"
+  },
+  "prettier": {
+    "plugins": [
+      "prettier-plugin-organize-imports"
+    ]
+  },
+  "peerDependencies": {
+    "react": ">=19.0.0"
+  },
+  "dependencies": {
+    "@emotion/hash": "^0.9.2",
+    "use-sync-external-store": "^1.6.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.0",
+    "@types/node": "^20.19.25",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@types/use-sync-external-store": "^1.5.0",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "jsdom": "^27.2.0",
+    "prettier": "^3.7.3",
+    "prettier-plugin-organize-imports": "^4.3.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.48.0",
+    "vitest": "^4.0.14",
+    "zshy": "^0.6.0"
+  }
+}

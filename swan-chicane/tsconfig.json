@@ -1,0 +1,36 @@
+{
+  "include": ["src", "__tests__"],
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "es2019",
+    "lib": ["DOM", "DOM.Iterable", "ES2019"],
+    "jsx": "react-jsx",
+    "moduleResolution": "node",
+    "outDir": "dist/",
+
+    "allowJs": false,
+    "strict": true,
+    "noEmit": true,
+    "noEmitOnError": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "incremental": false,
+
+    // Interop constraints
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+
+    // Type checking
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "exactOptionalPropertyTypes": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": false,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  }
+}
